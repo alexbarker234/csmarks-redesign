@@ -1,5 +1,6 @@
 import fs from "fs";
 import sqlite3 from "sqlite3";
+import { randBetween } from "../utils/random";
 const dbPath = "./public/mock.sqlite";
 
 const createTables = (db: sqlite3.Database) => {
@@ -43,9 +44,15 @@ const createTables = (db: sqlite3.Database) => {
   `);
 };
 
+const assessmentSets = [
+  ["Lab Quiz 1", "Lab Quiz 2", "Lab Quiz 3", "Project 1", "Project 2"],
+  ["Midterm Exam", "Final Exam", "Project 1", "Project 2"],
+  ["Lab Quiz 1", "Report 1", "Lab Quiz 2", "Report 2", "Lab Quiz 3", "Report 3"]
+];
+
 const seedData = (db: sqlite3.Database) => {
   const users = [
-    { id: 23347863, firstName: "John", lastName: "Doe" },
+    { id: 23152009, firstName: "Alex", lastName: "Barker" },
     { id: 22847284, firstName: "Jane", lastName: "Smith" },
     { id: 28375637, firstName: "Bob", lastName: "Johnson" }
   ];
@@ -56,132 +63,72 @@ const seedData = (db: sqlite3.Database) => {
     { id: "CITS3200", name: "Professional Computing" }
   ];
 
-  const enrollments = [
-    { unitId: "CITS2006", userId: 23347863 },
-    { unitId: "CITS2006", userId: 22847284 },
-    { unitId: "CITS2006", userId: 28375637 },
-
-    { unitId: "CITS3006", userId: 23347863 },
-    { unitId: "CITS3006", userId: 22847284 },
-    { unitId: "CITS3006", userId: 28375637 },
-
-    { unitId: "CITS3200", userId: 23347863 },
-    { unitId: "CITS3200", userId: 22847284 },
-    { unitId: "CITS3200", userId: 28375637 }
-  ];
-
-  const assessments = [
-    {
-      id: 1,
-      name: "Lab Quiz 1",
-      unitId: 1,
-      maxMark: 100,
-      resultsReleased: true
-    },
-    {
-      id: 2,
-      name: "Lab Quiz 2",
-      unitId: 1,
-      maxMark: 100,
-      resultsReleased: true
-    },
-    {
-      id: 3,
-      name: "Midterm Exam",
-      unitId: 1,
-      maxMark: 100,
-      resultsReleased: true
-    },
-    {
-      id: 4,
-      name: "Final Exam",
-      unitId: 1,
-      maxMark: 100,
-      resultsReleased: true
-    },
-
-    {
-      id: 5,
-      name: "Lab Quiz 1",
-      unitId: 2,
-      maxMark: 100,
-      resultsReleased: true
-    },
-    {
-      id: 6,
-      name: "Midterm Exam",
-      unitId: 2,
-      maxMark: 100,
-      resultsReleased: true
-    },
-    {
-      id: 7,
-      name: "Lab Quiz 2",
-      unitId: 2,
-      maxMark: 100,
-      resultsReleased: false
-    },
-    {
-      id: 8,
-      name: "Final Project",
-      unitId: 2,
-      maxMark: 100,
-      resultsReleased: false
-    },
-
-    {
-      id: 9,
-      name: "Group Project 1",
-      unitId: 3,
-      maxMark: 10,
-      resultsReleased: true
-    },
-    {
-      id: 10,
-      name: "Reflections",
-      unitId: 3,
-      maxMark: 10,
-      resultsReleased: true
-    },
-    { id: 11, name: "Sprint 1", unitId: 3, maxMark: 22, resultsReleased: true },
-    { id: 12, name: "Sprint 2", unitId: 3, maxMark: 20, resultsReleased: true },
-    {
-      id: 13,
-      name: "Final Report",
-      unitId: 3,
-      maxMark: 20,
-      resultsReleased: true
-    },
-    {
-      id: 14,
-      name: "Presentation",
-      unitId: 3,
-      maxMark: 5,
-      resultsReleased: true
+  // Enrol each user into a random 2 units
+  const enrollments = [];
+  for (const user of users) {
+    const unitIds = units
+      .map((unit) => unit.id)
+      .sort(() => 0.5 - Math.random());
+    for (const unitId of unitIds) {
+      enrollments.push({ unitId, userId: user.id });
     }
-  ];
+  }
 
-  const results = [
-    // Defensive Cybersecurity scores
-    { userId: 23347863, assessmentId: 1, mark: 71 },
-    { userId: 23347863, assessmentId: 2, mark: 98 },
-    { userId: 23347863, assessmentId: 3, mark: 74 },
-    { userId: 23347863, assessmentId: 4, mark: 90 },
+  // For each unit, choose an assessment set and release a random number of assessments
+  const markOptions = [20, 40, 60, 80, 100];
 
-    // Penetration Testing scores
-    { userId: 23347863, assessmentId: 5, mark: 81 },
-    { userId: 23347863, assessmentId: 6, mark: 78 },
-    { userId: 23347863, assessmentId: 7, mark: undefined },
-    { userId: 23347863, assessmentId: 8, mark: undefined },
+  const assessments: {
+    id: number;
+    name: string;
+    unitId: string;
+    maxMark: number;
+    resultsReleased: boolean;
+  }[] = [];
+  for (const unit of units) {
+    const assessmentSet =
+      assessmentSets[Math.floor(Math.random() * assessmentSets.length)];
+    for (const assessmentName of assessmentSet) {
+      const assessment = assessments.find((a) => a.name === assessmentName);
+      if (!assessment) {
+        const maxMark =
+          markOptions[Math.floor(Math.random() * markOptions.length)];
+        const resultsReleased = Math.random() > 0.5;
+        assessments.push({
+          id: assessments.length + 1,
+          name: assessmentName,
+          unitId: unit.id,
+          maxMark,
+          resultsReleased
+        });
+      }
+    }
+  }
 
-    // Professional Computing scores
-    { userId: 23347863, assessmentId: 9, mark: 6 },
-    { userId: 23347863, assessmentId: 10, mark: 3 },
-    { userId: 23347863, assessmentId: 11, mark: 22 },
-    { userId: 23347863, assessmentId: 12, mark: 12 },
-    { userId: 23347863, assessmentId: 13, mark: 18 },
-    { userId: 23347863, assessmentId: 14, mark: 4 }
-  ];
+  // Generate random marks for each user in their enrolled units
+  const results: {
+    userId: number;
+    assessmentId: number;
+    mark: number | null;
+  }[] = [];
+  for (const enrollment of enrollments) {
+    const { userId, unitId } = enrollment;
+
+    // Find assessments for the user's enrolled unit
+    const unitAssessments = assessments.filter(
+      (assessment) => assessment.unitId === unitId
+    );
+
+    for (const assessment of unitAssessments) {
+      const mark = assessment.resultsReleased
+        ? Math.floor(randBetween(0, assessment.maxMark))
+        : null;
+      results.push({
+        userId,
+        assessmentId: assessment.id,
+        mark
+      });
+    }
+  }
 
   // Insert data
   for (const user of users) {

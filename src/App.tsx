@@ -10,7 +10,7 @@ import { useUser } from "./hooks/user";
 function App() {
   const [time, setTime] = useState("");
 
-  const { data: testuser } = useUser({ id: 23347863 });
+  const { data: testuser } = useUser({ id: 23347833 });
 
   console.log(`user loaded:`, testuser);
 
