@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && seed",
+    "build": "tsc -b && vite build && npm run seed",
     "lint": "eslint .",
     "preview": "vite preview",
     "seed": "tsx ./src/database/seed.ts"

@@ -58,13 +58,36 @@ const seedData = (db: sqlite3.Database) => {
   ];
 
   const units = [
+    // Level 1
+    { id: "CITS1003", name: "Introduction to Cybersecurity" },
+    { id: "CITS1401", name: "Computational Thinking with Python" },
+    { id: "CITS1402", name: "Relational Database Management Systems" },
+    { id: "CITS1501", name: "Introduction to Programming with Python" },
+    // Level 2
+    { id: "CITS2002", name: "Systems Programming" },
+    { id: "CITS2005", name: "Object Oriented Programming" },
     { id: "CITS2006", name: "Defensive Cybersecurity" },
+    { id: "CITS2200", name: "Data Structures and Algorithms" },
+    { id: "CITS2211", name: "Discrete Structures" },
+    { id: "CITS2401", name: "Computer Analysis and Visualisation" },
+    { id: "CITS2402", name: "Introduction to Data Science" },
+    // Level 3
+    { id: "CITS3001", name: "Advanced Algorithms" },
+    { id: "CITS3002", name: "Computer Networks" },
+    { id: "CITS3003", name: "Graphics and Animation" },
+    { id: "CITS3005", name: "Knowledge Representation" },
     { id: "CITS3006", name: "Penetration Testing" },
-    { id: "CITS3200", name: "Professional Computing" }
+    { id: "CITS3007", name: "Secure Coding" },
+    { id: "CITS3011", name: "Intelligent Agents" },
+    { id: "CITS3200", name: "Professional Computing" },
+    { id: "CITS3301", name: "Software Requirements and Design" },
+    { id: "CITS3401", name: "Data Warehousing" },
+    { id: "CITS3402", name: "High Performance Computing" },
+    { id: "CITS3403", name: "Agile Web Development" }
   ];
 
-  // Enrol each user into a random 2 units
-  const numUnits = 2;
+  // Enrol each user into random units
+  const numUnits = 4;
   const enrollments = [];
   for (const user of users) {
     const unitIds = units
@@ -87,24 +110,35 @@ const seedData = (db: sqlite3.Database) => {
     maxMark: number;
     resultsReleased: boolean;
   }[] = [];
+
   for (const unit of units) {
+    // Select a random assessment set for this unit
     const assessmentSet =
       assessmentSets[Math.floor(Math.random() * assessmentSets.length)];
-    for (const assessmentName of assessmentSet) {
-      const assessment = assessments.find((a) => a.name === assessmentName);
-      if (!assessment) {
-        const maxMark =
-          markOptions[Math.floor(Math.random() * markOptions.length)];
-        const resultsReleased = Math.random() > 0.5;
-        assessments.push({
-          id: assessments.length + 1,
-          name: assessmentName,
-          unitId: unit.id,
-          maxMark,
-          resultsReleased
-        });
-      }
+
+    // Generate assessments for the current unit
+    const unitAssessments = assessmentSet.map((assessmentName, index) => ({
+      id: assessments.length + index + 1,
+      name: assessmentName,
+      unitId: unit.id,
+      maxMark: markOptions[Math.floor(Math.random() * markOptions.length)],
+      resultsReleased: true // Default to true; we'll adjust the last few after
+    }));
+
+    // Determine the number of final assessments to hide (1 to 3)
+    const numUnreleased = Math.floor(Math.random() * 3) + 1;
+
+    // Set `resultsReleased` to false for the last `numUnreleased` assessments
+    for (
+      let i = unitAssessments.length - numUnreleased;
+      i < unitAssessments.length;
+      i++
+    ) {
+      unitAssessments[i].resultsReleased = false;
     }
+
+    // Add the unit's assessments to the main assessments array
+    assessments.push(...unitAssessments);
   }
 
   // Generate random marks for each user in their enrolled units
