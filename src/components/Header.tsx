@@ -1,4 +1,5 @@
 import { IoMdMenu } from "react-icons/io";
+import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/auth";
 
 const baseURL = "https://secure.csse.uwa.edu.au";
@@ -44,7 +45,9 @@ export default function Header() {
             />
           </a>
           <div className="relative inline-block">
-            <button className="text-xl text-white">csmarks</button>
+            <Link to="/" className="text-xl text-white">
+              csmarks
+            </Link>
           </div>
         </div>
 

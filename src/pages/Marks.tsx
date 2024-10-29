@@ -14,10 +14,10 @@ import {
   Tooltip
 } from "chart.js";
 import { FaChevronDown } from "react-icons/fa";
+import AssessmentHistogram from "../components/AssessmentHistogram";
+import MarksSummary from "../components/MarksSummary";
 import { useAuth } from "../hooks/auth";
 import { Unit } from "../types";
-import AssessmentHistogram from "./AssessmentHistogram";
-import MarksSummary from "./MarksSummary";
 
 ChartJS.register(
   CategoryScale,
@@ -66,7 +66,7 @@ const unitsData: Unit[] = [
   }
 ];
 
-export default function Marks() {
+export default function MarksPage() {
   const { user } = useAuth();
 
   if (!user) return <></>;

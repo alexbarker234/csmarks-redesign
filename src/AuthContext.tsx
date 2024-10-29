@@ -1,5 +1,6 @@
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+import { fetchUser } from "./database/db";
 import { User } from "./types";
 
 interface AuthContextType {
@@ -18,18 +19,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [cookies, setCookie, removeCookie] = useCookies(["userId"]);
 
-  useEffect(() => {
+  const updateUser = async () => {
     if (cookies.userId) {
-      setUser({
-        firstName: "Example",
-        lastName: "Person",
-        id: cookies.userId
-      });
+      const user = await fetchUser(cookies.userId);
+      setUser(user);
     }
+  };
+
+  useEffect(() => {
+    updateUser();
   }, [cookies.userId]);
 
   const login = (userId: string) => {
-    setUser({ firstName: "Example", lastName: "Person", id: userId });
+    updateUser();
     setCookie("userId", userId, { path: "/" });
   };
 

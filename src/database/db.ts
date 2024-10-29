@@ -1,4 +1,5 @@
 import initSqlJs, { Database, QueryExecResult } from "sql.js";
+import { User } from "../types";
 
 let dbInstance: Database | null = null;
 
@@ -20,9 +21,7 @@ async function initDB(dbFile: string = "/mock.sqlite"): Promise<Database> {
 }
 
 // Fetch a User by ID
-export async function fetchUser(
-  userId: number
-): Promise<{ id: number; firstName: string; lastName: string } | null> {
+export async function fetchUser(userId: number): Promise<User | null> {
   const db = await initDB();
   const result: QueryExecResult[] = db.exec(
     `SELECT id, firstName, lastName FROM User WHERE id = ?`,

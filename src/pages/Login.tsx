@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchUser } from "../database/db";
 import { useAuth } from "../hooks/auth";
 
-export default function LoginForm() {
+export default function LoginPage() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const { login } = useAuth();
+  const { user, login } = useAuth();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +35,9 @@ export default function LoginForm() {
       return;
     }
     login(userId);
+
+    navigate("/");
+
     setError("");
   };
 
