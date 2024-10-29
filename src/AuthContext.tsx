@@ -23,13 +23,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setUser({
         firstName: "Example",
         lastName: "Person",
-        userId: cookies.userId
+        id: cookies.userId
       });
     }
   }, [cookies.userId]);
 
   const login = (userId: string) => {
-    setUser({ firstName: "Example", lastName: "Person", userId });
+    setUser({ firstName: "Example", lastName: "Person", id: userId });
     setCookie("userId", userId, { path: "/" });
   };
 

@@ -5,9 +5,14 @@ import InfoPanel from "./components/InfoPanel";
 import LoginForm from "./components/Login";
 import Marks from "./components/Marks";
 import { useAuth } from "./hooks/auth";
+import { useUser } from "./hooks/user";
 
 function App() {
   const [time, setTime] = useState("");
+
+  const { data: testuser } = useUser({ id: 23347863 });
+
+  console.log(`user loaded:`, testuser);
 
   const showPerthTime = () => {
     const date = new Date();

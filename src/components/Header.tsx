@@ -50,7 +50,7 @@ export default function Header() {
 
         <div className="group relative flex cursor-pointer items-center text-white">
           <div className="mr-3 text-right text-xl">
-            {user ? user.userId : "Login"}
+            {user ? user.id : "Login"}
           </div>
           <IoMdMenu size={35} className="ml-2" />
 

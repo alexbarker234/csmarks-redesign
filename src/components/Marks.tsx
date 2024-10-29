@@ -80,7 +80,7 @@ export default function Marks() {
         href="mailto:{user?.userId}@student.uwa.edu.au"
         className="text-primary-blue"
       >
-        {user?.userId}@student.uwa.edu.au
+        {user?.id}@student.uwa.edu.au
       </a>
 
       <h2 className="mt-4 text-2xl font-bold">
