@@ -1,5 +1,6 @@
 import { createHashRouter } from "react-router-dom";
 import Error from "./pages/Error.tsx";
+import ForumPage from "./pages/Forum.tsx";
 import HomePage from "./pages/Home.tsx";
 import LoginPage from "./pages/Login.tsx";
 import MarksPage from "./pages/Marks.tsx";
@@ -23,6 +24,10 @@ const router = createHashRouter([
       {
         path: "/login",
         element: <LoginPage />
+      },
+      {
+        path: "/forum",
+        element: <ForumPage />
       },
       {
         path: "/marks",
