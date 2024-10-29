@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import InfoPanel from "./components/InfoPanel";
+import IntroModal from "./components/IntroModal";
 import LoginForm from "./components/Login";
 import Marks from "./components/Marks";
 import { useAuth } from "./hooks/auth";
@@ -37,6 +38,7 @@ function App() {
 
   return (
     <div className="flex min-h-lvh flex-col">
+      <IntroModal />
       <Header />
 
       {/* Main Content */}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { fetchUser } from "../database/db";
 import { useAuth } from "../hooks/auth";
 
 export default function LoginForm() {
@@ -8,7 +9,7 @@ export default function LoginForm() {
 
   const { login } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!userId || !password) {
@@ -16,6 +17,16 @@ export default function LoginForm() {
       return;
     }
 
+    if (!/^\d{8}$/.test(userId)) {
+      setError("User ID must be 8 digits");
+      return;
+    }
+    const numericUserId = Number(userId);
+    const user = await fetchUser(numericUserId);
+    if (!user) {
+      setError("User does not exist");
+      return;
+    }
     login(userId);
     setError("");
   };
@@ -73,7 +84,7 @@ export default function LoginForm() {
         <div>
           <button
             type="submit"
-            className="hover:bg-primary-blue-dark rounded-lg bg-primary-blue px-6 py-3 text-white shadow-md transition-colors"
+            className="rounded-lg bg-primary-blue px-6 py-3 text-white shadow-md transition-colors hover:bg-primary-blue-dark"
           >
             Login
           </button>
