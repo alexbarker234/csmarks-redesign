@@ -4,6 +4,7 @@ import { fetchUser } from "./database/db";
 import { User } from "./types";
 
 interface AuthContextType {
+  isReady: boolean;
   user: User | null;
   login: (userId: string) => void;
   logout: () => void;
@@ -17,12 +18,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isReady, setIsReady] = useState(false);
   const [cookies, setCookie, removeCookie] = useCookies(["userId"]);
 
   const updateUser = async () => {
     if (cookies.userId) {
       const user = await fetchUser(cookies.userId);
       setUser(user);
+      setIsReady(true);
     }
   };
 
@@ -43,6 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   return (
     <AuthContext.Provider
       value={{
+        isReady,
         user,
         login,
         logout

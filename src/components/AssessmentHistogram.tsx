@@ -28,7 +28,7 @@ export default function AssessmentHistogram({
   assessment: Assessment;
   bins?: number;
 }) {
-  if (!assessment.score) {
+  if (!assessment.mark) {
     return (
       <div className="flex h-[321px] w-[430px] items-center rounded-md border border-gray-300 p-4 text-center">
         <div className="w-full">{assessment.name} marks not yet released</div>
@@ -41,12 +41,12 @@ export default function AssessmentHistogram({
     randBetween(10, 16),
     199
   );
-  userScores.push(assessment.score);
+  userScores.push(assessment.mark);
 
   const histogramData = convertToBins(userScores, bins);
 
   // Determine the bin for the current user's score
-  const userBin = Math.floor((assessment.score / assessment.total) * bins);
+  const userBin = Math.floor((assessment.mark / assessment.maxMark) * bins);
 
   // Adjust histogram data to highlight the user's bin in blue
   const backgroundColors = histogramData.map((_, index) =>

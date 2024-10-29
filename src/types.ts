@@ -6,8 +6,8 @@ export interface User {
 
 export interface Assessment {
   name: string;
-  score?: number;
-  total: number;
+  mark?: number;
+  maxMark: number;
 }
 
 export interface Unit {

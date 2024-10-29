@@ -64,11 +64,14 @@ const seedData = (db: sqlite3.Database) => {
   ];
 
   // Enrol each user into a random 2 units
+  const numUnits = 2;
   const enrollments = [];
   for (const user of users) {
     const unitIds = units
       .map((unit) => unit.id)
-      .sort(() => 0.5 - Math.random());
+      .sort(() => 0.5 - Math.random())
+      .slice(0, numUnits);
+
     for (const unitId of unitIds) {
       enrollments.push({ unitId, userId: user.id });
     }

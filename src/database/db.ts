@@ -1,5 +1,5 @@
 import initSqlJs, { Database, QueryExecResult } from "sql.js";
-import { User } from "../types";
+import { Assessment, User } from "../types";
 
 let dbInstance: Database | null = null;
 
@@ -27,8 +27,6 @@ export async function fetchUser(userId: number): Promise<User | null> {
     `SELECT id, firstName, lastName FROM User WHERE id = ?`,
     [userId]
   );
-  console.log(`Fetching user ${userId}`);
-  console.log({ result });
   if (result.length > 0 && result[0].values.length > 0) {
     const row = result[0].values[0];
     return {
@@ -90,11 +88,11 @@ export async function fetchUserAssessments(
 export async function fetchUserAssessmentsForUnit(
   userId: number,
   unitId: string
-): Promise<{ assessmentId: number; name: string; mark: number | null }[]> {
+): Promise<Assessment[]> {
   const db = await initDB();
   const result: QueryExecResult[] = db.exec(
     `
-    SELECT Assessment.id, Assessment.name, Result.mark
+    SELECT Assessment.name, Result.mark, Assessment.maxMark
     FROM Assessment
     LEFT JOIN Result ON Assessment.id = Result.assessmentId AND Result.userId = ?
     WHERE Assessment.unitId = ?
@@ -104,9 +102,9 @@ export async function fetchUserAssessmentsForUnit(
 
   return result.length > 0
     ? result[0].values.map((row) => ({
-        assessmentId: row[0] as number,
-        name: row[1] as string,
-        mark: row[2] as number | null
+        name: row[0] as string,
+        mark: row[1] !== null ? (row[1] as number) : undefined,
+        maxMark: row[2] as number
       }))
     : [];
 }
