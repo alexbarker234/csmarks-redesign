@@ -16,3 +16,24 @@ export interface Unit {
   overall: string;
   assessments: Assessment[];
 }
+
+export type Reply = {
+  timestamp: string;
+  author: string;
+  likes: number;
+};
+
+export type ReplyDetails = {
+  timestamp: string;
+  author: string;
+  likes: number;
+  content: string;
+};
+
+export type Post<T extends Reply | ReplyDetails> = {
+  id: number;
+  title: string;
+  likes: number;
+  tags: string[];
+  replies: T[];
+};

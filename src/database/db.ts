@@ -1,5 +1,5 @@
 import initSqlJs, { Database, QueryExecResult } from "sql.js";
-import { Assessment, User } from "../types";
+import { Assessment, Post, Reply, ReplyDetails, User } from "../types";
 
 let dbInstance: Database | null = null;
 
@@ -136,4 +136,123 @@ export async function fetchUnitAssessments(unitId: string): Promise<
         resultsReleased: Boolean(row[3])
       }))
     : [];
+}
+
+export async function fetchPostsInForumByName(
+  forumName: string
+): Promise<Post<Reply>[]> {
+  const db = await initDB();
+
+  // Fetch posts with their tags and likes, plus replies without content
+  const result: QueryExecResult[] = db.exec(
+    `
+    SELECT 
+      Post.id AS postId, 
+      Post.title, 
+      Post.likes, 
+      GROUP_CONCAT(Tag.name) AS tags,
+      Reply.timestamp, 
+      User.firstName || ' ' || User.lastName AS author,
+      Reply.likes AS replyLikes
+    FROM Post
+    JOIN Forum ON Post.forumId = Forum.id
+    LEFT JOIN Reply ON Post.id = Reply.postId
+    LEFT JOIN User ON Reply.userId = User.id
+    LEFT JOIN PostTag ON Post.id = PostTag.postId
+    LEFT JOIN Tag ON PostTag.tagId = Tag.id
+    WHERE Forum.name = ?
+    GROUP BY Post.id, Post.title, Post.likes, Reply.timestamp, User.firstName, User.lastName
+    ORDER BY Post.id, Reply.timestamp
+  `,
+    [forumName]
+  );
+
+  // Organize data by post and reply
+  const postsMap = new Map<number, Post<Reply>>();
+
+  result[0]?.values.forEach((row) => {
+    const postId = row[0] as number;
+    const postTitle = row[1] as string;
+    const postLikes = row[2] as number;
+    const tags = (row[3] as string)?.split(",") ?? [];
+    const replyTimestamp = row[4] as string;
+    const replyAuthor = row[5] as string;
+    const replyLikes = row[6] as number;
+
+    // If post is not yet added, initialize it
+    if (!postsMap.has(postId)) {
+      postsMap.set(postId, {
+        id: postId,
+        title: postTitle,
+        replies: [],
+        likes: postLikes,
+        tags: tags
+      });
+    }
+
+    // Add reply data if it exists
+    if (replyTimestamp && replyAuthor) {
+      postsMap.get(postId)?.replies.push({
+        timestamp: replyTimestamp,
+        author: replyAuthor,
+        likes: replyLikes
+      });
+    }
+  });
+
+  return Array.from(postsMap.values());
+}
+
+export async function fetchPostDetailsById(
+  postId: number
+): Promise<Post<ReplyDetails> | null> {
+  const db = await initDB();
+
+  // Fetch post details and associated replies
+  const result: QueryExecResult[] = db.exec(
+    `
+    SELECT 
+      Post.id AS postId, 
+      Post.title, 
+      Post.likes, 
+      GROUP_CONCAT(Tag.name) AS tags,
+      Reply.timestamp, 
+      User.firstName || ' ' || User.lastName AS author,
+      Reply.likes AS replyLikes,
+      Reply.content AS replyContent
+    FROM Post
+    LEFT JOIN Reply ON Post.id = Reply.postId
+    LEFT JOIN User ON Reply.userId = User.id
+    LEFT JOIN PostTag ON Post.id = PostTag.postId
+    LEFT JOIN Tag ON PostTag.tagId = Tag.id
+    WHERE Post.id = ?
+    GROUP BY Post.id, Post.title, Post.content, Post.likes, Reply.timestamp, Reply.author
+    ORDER BY Reply.timestamp
+  `,
+    [postId]
+  );
+
+  if (result.length === 0 || result[0].values.length === 0) {
+    return null; // No post found
+  }
+
+  const rows = result[0].values;
+
+  // Map the first row for the post data and group replies
+  const postDetails: Post<ReplyDetails> = {
+    id: rows[0][0] as number,
+    title: rows[0][1] as string,
+    likes: rows[0][3] as number,
+    tags: (rows[0][4] as string)?.split(",") || [],
+    replies: rows
+      .map((row) => ({
+        timestamp: row[5] as string,
+        author: row[6] as string,
+        likes: row[7] as number,
+        content: row[8] as string
+      }))
+      .filter((reply) => reply.author && reply.content) // Exclude rows without reply data
+  };
+
+  return postDetails;
 }

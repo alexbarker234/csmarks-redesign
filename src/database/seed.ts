@@ -1,16 +1,62 @@
+import { faker } from "@faker-js/faker";
 import fs from "fs";
 import sqlite3 from "sqlite3";
 import { randBetween } from "../utils/random";
 const dbPath = "./public/mock.sqlite";
 
 const createTables = (db: sqlite3.Database) => {
+  // Users
   db.exec(`
     CREATE TABLE IF NOT EXISTS User (
       id INTEGER PRIMARY KEY,
       firstName TEXT NOT NULL,
       lastName TEXT NOT NULL
+    );`);
+
+  // Forums
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS Forum (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT
     );
 
+    CREATE TABLE IF NOT EXISTS Post (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      forumId INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      likes INTEGER DEFAULT 0,
+      FOREIGN KEY (forumId) REFERENCES Forum(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS Reply (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      postId INTEGER NOT NULL,
+      userId INTEGER NOT NULL,
+      content TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      likes INTEGER DEFAULT 0,
+      FOREIGN KEY (postId) REFERENCES Post(id) ON DELETE CASCADE
+      FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS Tag (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS PostTag (
+      postId INTEGER NOT NULL,
+      tagId INTEGER NOT NULL,
+      PRIMARY KEY (postId, tagId),
+      FOREIGN KEY (postId) REFERENCES post(id) ON DELETE CASCADE,
+      FOREIGN KEY (tagId) REFERENCES tag(id) ON DELETE CASCADE
+    );
+  `);
+
+  // Units
+  db.exec(`
     CREATE TABLE IF NOT EXISTS Unit (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL
@@ -50,42 +96,148 @@ const assessmentSets = [
   ["Lab Quiz 1", "Report 1", "Lab Quiz 2", "Report 2", "Lab Quiz 3", "Report 3"]
 ];
 
+const units = [
+  // Level 1
+  { id: "CITS1003", name: "Introduction to Cybersecurity" },
+  { id: "CITS1401", name: "Computational Thinking with Python" },
+  { id: "CITS1402", name: "Relational Database Management Systems" },
+  { id: "CITS1501", name: "Introduction to Programming with Python" },
+  // Level 2
+  { id: "CITS2002", name: "Systems Programming" },
+  { id: "CITS2005", name: "Object Oriented Programming" },
+  { id: "CITS2006", name: "Defensive Cybersecurity" },
+  { id: "CITS2200", name: "Data Structures and Algorithms" },
+  { id: "CITS2211", name: "Discrete Structures" },
+  { id: "CITS2401", name: "Computer Analysis and Visualisation" },
+  { id: "CITS2402", name: "Introduction to Data Science" },
+  // Level 3
+  { id: "CITS3001", name: "Advanced Algorithms" },
+  { id: "CITS3002", name: "Computer Networks" },
+  { id: "CITS3003", name: "Graphics and Animation" },
+  { id: "CITS3005", name: "Knowledge Representation" },
+  { id: "CITS3006", name: "Penetration Testing" },
+  { id: "CITS3007", name: "Secure Coding" },
+  { id: "CITS3011", name: "Intelligent Agents" },
+  { id: "CITS3200", name: "Professional Computing" },
+  { id: "CITS3301", name: "Software Requirements and Design" },
+  { id: "CITS3401", name: "Data Warehousing" },
+  { id: "CITS3402", name: "High Performance Computing" },
+  { id: "CITS3403", name: "Agile Web Development" }
+];
+const users = [
+  { id: 23152009, firstName: "Alex", lastName: "Barker" },
+  { id: 22847284, firstName: "Jane", lastName: "Smith" },
+  { id: 28375637, firstName: "Bob", lastName: "Johnson" }
+];
+const seedForums = (db: sqlite3.Database) => {
+  const forums: { id: number; name: string; description: string }[] = [];
+
+  units.forEach((unit) => {
+    forums.push({
+      id: forums.length + 1,
+      name: `help${unit.id.slice(-4)}`,
+      description: `Forum for help with ${unit.name}`
+    });
+  });
+
+  const tags = [
+    "computing",
+    "algorithms",
+    "data structures",
+    "security",
+    "web development"
+  ];
+
+  const posts: {
+    id: number;
+    forumId: number;
+    title: string;
+    content: string;
+    likes: number;
+    tags: string[];
+  }[] = [];
+
+  const replies: {
+    id: number;
+    postId: number;
+    userId: number;
+    content: string;
+    timestamp: Date;
+    likes: number;
+  }[] = [];
+
+  let postId = 0;
+  let replyId = 0;
+  for (const forum of forums) {
+    const numPostsInForum = faker.number.int({ min: 2, max: 5 });
+    for (let i = 0; i < numPostsInForum; i++) {
+      const numReplies = faker.number.int({ min: 2, max: 5 });
+      const postTags = faker.helpers.arrayElements(
+        tags,
+        faker.number.int({ min: 1, max: 3 })
+      );
+
+      const post = {
+        id: postId,
+        forumId: forum.id,
+        title: faker.lorem.sentence(),
+        content: faker.lorem.paragraphs(faker.number.int({ min: 1, max: 3 })),
+        likes: faker.number.int({ min: 2, max: 100 }),
+        tags: postTags
+      };
+
+      for (let i = 0; i < numReplies; i++) {
+        replies.push({
+          id: replyId,
+          postId: post.id,
+          userId: faker.helpers.arrayElement(users).id,
+          content: faker.lorem.sentences(faker.number.int({ min: 1, max: 3 })),
+          timestamp: faker.date.recent({ days: 30 }),
+          likes: faker.number.int({ min: 1, max: 4 })
+        });
+        replyId++;
+      }
+
+      posts.push(post);
+      postId++;
+    }
+  }
+  for (const forum of forums) {
+    db.run(
+      `INSERT INTO Forum (id, name, description) VALUES (?, ?, ?)`,
+      forum.id,
+      forum.name,
+      forum.description
+    );
+  }
+  for (let i = 0; i < tags.length; i++) {
+    const tag = tags[i];
+    db.run(`INSERT INTO Tag (id, name) VALUES (?, ?)`, i, tag);
+  }
+  for (const post of posts) {
+    db.run(
+      `INSERT INTO Post (id, forumId, title, content, likes) VALUES (?, ?, ?, ?, ?)`,
+      post.id,
+      post.forumId,
+      post.title,
+      post.content,
+      post.likes
+    );
+  }
+  for (const reply of replies) {
+    db.run(
+      `INSERT INTO Reply (id, postId, userId, content, timestamp, likes) VALUES (?, ?, ?, ?, ?, ?)`,
+      reply.id,
+      reply.postId,
+      reply.userId,
+      reply.content,
+      reply.timestamp,
+      reply.likes
+    );
+  }
+};
+
 const seedData = (db: sqlite3.Database) => {
-  const users = [
-    { id: 23152009, firstName: "Alex", lastName: "Barker" },
-    { id: 22847284, firstName: "Jane", lastName: "Smith" },
-    { id: 28375637, firstName: "Bob", lastName: "Johnson" }
-  ];
-
-  const units = [
-    // Level 1
-    { id: "CITS1003", name: "Introduction to Cybersecurity" },
-    { id: "CITS1401", name: "Computational Thinking with Python" },
-    { id: "CITS1402", name: "Relational Database Management Systems" },
-    { id: "CITS1501", name: "Introduction to Programming with Python" },
-    // Level 2
-    { id: "CITS2002", name: "Systems Programming" },
-    { id: "CITS2005", name: "Object Oriented Programming" },
-    { id: "CITS2006", name: "Defensive Cybersecurity" },
-    { id: "CITS2200", name: "Data Structures and Algorithms" },
-    { id: "CITS2211", name: "Discrete Structures" },
-    { id: "CITS2401", name: "Computer Analysis and Visualisation" },
-    { id: "CITS2402", name: "Introduction to Data Science" },
-    // Level 3
-    { id: "CITS3001", name: "Advanced Algorithms" },
-    { id: "CITS3002", name: "Computer Networks" },
-    { id: "CITS3003", name: "Graphics and Animation" },
-    { id: "CITS3005", name: "Knowledge Representation" },
-    { id: "CITS3006", name: "Penetration Testing" },
-    { id: "CITS3007", name: "Secure Coding" },
-    { id: "CITS3011", name: "Intelligent Agents" },
-    { id: "CITS3200", name: "Professional Computing" },
-    { id: "CITS3301", name: "Software Requirements and Design" },
-    { id: "CITS3401", name: "Data Warehousing" },
-    { id: "CITS3402", name: "High Performance Computing" },
-    { id: "CITS3403", name: "Agile Web Development" }
-  ];
-
   // Enrol each user into random units
   const numUnits = 4;
   const enrollments = [];
@@ -220,10 +372,10 @@ async function seedDatabase() {
   db.serialize(() => {
     createTables(db);
     seedData(db);
+    seedForums(db);
   });
 
   console.log("Database initialized and seeded successfully.");
-  await db.close();
 }
 
 seedDatabase().catch((error) => {

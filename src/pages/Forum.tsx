@@ -1,27 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import SearchBox from "../components/SearchBox";
-import { posts as initialPosts } from "../database/postData";
-
-type Reply = {
-  timestamp: string;
-  author: string;
-  content: string;
-  likes: number;
-};
-
-type Post = {
-  id: number;
-  title: string;
-  replies: Reply[];
-  likes: number;
-  tags: string[];
-};
+import { fetchPostsInForumByName } from "../database/db";
+import { Post, Reply } from "../types";
+import { formatDate } from "../utils/dateUtils";
 
 export default function ForumPage() {
-  const [posts] = useState<Post[]>(initialPosts);
+  const { forumId } = useParams();
+
+  const [posts, setPosts] = useState<Post<Reply>[]>();
+
+  useEffect(() => {
+    if (forumId) {
+      fetchPostsInForumByName(forumId).then((posts) => {
+        setPosts(posts);
+      });
+    }
+  }, [forumId]);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  if (!posts) return <></>;
 
   const allTags = Array.from(new Set(posts.flatMap((post) => post.tags)));
 
@@ -71,9 +71,10 @@ export default function ForumPage() {
 
       {/* Display Filtered Posts */}
       {filteredPosts.map((post) => (
-        <div
+        <Link
+          to={`/forum/${forumId}/${post.id}`}
           key={post.id}
-          className="post mb-6 rounded-lg border border-gray-300 p-4 shadow"
+          className="post mb-6 block rounded-lg border border-gray-300 p-4 shadow"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">{post.title}</h3>
@@ -102,19 +103,16 @@ export default function ForumPage() {
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-gray-500">
                     <span className="font-bold">{reply.author}</span> &bull;{" "}
-                    {reply.timestamp}
+                    {formatDate(new Date(reply.timestamp))}
                   </p>
                   <span className="text-sm text-gray-500">
                     {reply.likes} likes
                   </span>
                 </div>
-                {reply.content && (
-                  <p className="mt-1 text-gray-700">{reply.content}</p>
-                )}
               </div>
             ))}
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
