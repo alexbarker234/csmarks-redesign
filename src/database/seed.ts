@@ -1,8 +1,11 @@
 import { faker } from "@faker-js/faker";
 import Database from "better-sqlite3";
+import { exec } from "child_process";
 import { InferInsertModel } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
+import fs from "fs";
 import path from "path";
+import { promisify } from "util";
 import { randBetween } from "../utils/random";
 import {
   assessment,
@@ -16,6 +19,8 @@ import {
   unit,
   user
 } from "./schema";
+
+const execAsync = promisify(exec);
 
 const dbPath = "./public/mock.sqlite";
 
@@ -136,27 +141,25 @@ export const seedForums = async (db: ReturnType<typeof drizzle>) => {
     }
   }
 
-  await db.insert(forum).values(forums).run();
-  await db
-    .insert(tag)
+  db.insert(forum).values(forums).run();
+  db.insert(tag)
     .values(tags.map((name, i) => ({ id: i, name })))
     .run();
-  await db.insert(post).values(posts).run();
-  await db.insert(reply).values(replies).run();
-  await db.insert(postTag).values(postTags).run();
+  db.insert(post).values(posts).run();
+  db.insert(reply).values(replies).run();
+  db.insert(postTag).values(postTags).run();
 };
 
-async function seedDatabase() {
-  const db = initDB();
-
-  // Insert Users
+function seedUsers(db: ReturnType<typeof drizzle>) {
   for (const userData of users) {
-    await db.insert(user).values(userData).run();
+    db.insert(user).values(userData).run();
   }
+}
 
+function seedUnitsAndAssessments(db: ReturnType<typeof drizzle>) {
   // Insert Units
   for (const unitData of units) {
-    await db.insert(unit).values(unitData).run();
+    db.insert(unit).values(unitData).run();
   }
 
   // Enroll users in random units
@@ -172,7 +175,7 @@ async function seedDatabase() {
     }
   }
   for (const enrolmentData of enrolments) {
-    await db.insert(enrolment).values(enrolmentData).run();
+    db.insert(enrolment).values(enrolmentData).run();
   }
 
   // Generate assessments for each unit with a random assessment set
@@ -213,7 +216,7 @@ async function seedDatabase() {
   }
 
   for (const assessmentData of assessments) {
-    await db.insert(assessment).values(assessmentData).run();
+    db.insert(assessment).values(assessmentData).run();
   }
 
   // Insert Results with random marks
@@ -234,9 +237,39 @@ async function seedDatabase() {
     }
   }
   for (const resultData of results) {
-    await db.insert(result).values(resultData).run();
+    db.insert(result).values(resultData).run();
   }
+}
 
+async function createDatabase() {
+  try {
+    console.log("Recreating database...");
+
+    // Jank bc we aren't migrating
+    const migrationsPath = "./migrations";
+    if (fs.existsSync(migrationsPath)) {
+      fs.rmSync(migrationsPath, { recursive: true, force: true });
+      console.log("Old migrations folder deleted");
+    }
+
+    await execAsync("npx drizzle-kit generate");
+    await execAsync("npx drizzle-kit migrate");
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+async function seedDatabase() {
+  if (fs.existsSync(dbPath)) {
+    fs.unlinkSync(dbPath);
+    console.log("Old database file deleted");
+  }
+  await createDatabase();
+
+  const db = initDB();
+  seedUsers(db);
+  seedUnitsAndAssessments(db);
   seedForums(db);
 
   console.log("Database seeded successfully.");

@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build && npm run seed",
     "lint": "eslint .",
     "preview": "vite preview",
-    "seed": "drizzle-kit migrate && tsx ./src/database/seed.ts"
+    "seed": "tsx ./src/database/seed.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^9.1.0",
