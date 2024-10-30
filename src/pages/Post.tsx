@@ -11,7 +11,13 @@ import { formatDate } from "../utils/dateUtils";
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();
   const [post, setPost] = useState<Post<ReplyDetails> | null>(null);
-  const { setCustomTitle } = useBreadcrumb();
+  const { customTitles, setCustomTitle } = useBreadcrumb();
+
+  useEffect(() => {
+    if (!customTitles[`/forums/help1003/${postId}`]) {
+      setCustomTitle(`/forums/help1003/${postId}`, "Post");
+    }
+  }, []);
 
   useEffect(() => {
     if (postId) {

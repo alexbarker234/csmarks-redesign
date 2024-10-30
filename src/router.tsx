@@ -7,8 +7,8 @@ import LoginPage from "./pages/Login.tsx";
 import MarkDetailsPage from "./pages/MarkDetails.tsx";
 import MarksPage from "./pages/Marks.tsx";
 import PostPage from "./pages/Post.tsx";
+import ProtectedRoute from "./pages/ProtectedRoute.tsx";
 import Root from "./pages/Root";
-import ProtectedRoute from "./ProtectedRoute.tsx";
 
 const router = createHashRouter([
   {
