@@ -14,11 +14,11 @@ import {
   user
 } from "./schema";
 
-const db = await initDB();
-
 // Fetch a User by ID
 export async function fetchUser(userId: number): Promise<User | null> {
-  const result = await db
+  const db = await initDB();
+
+  const result = db
     .select({
       id: user.id,
       firstName: user.firstName,
@@ -35,7 +35,9 @@ export async function fetchUser(userId: number): Promise<User | null> {
 export async function fetchUserEnrolledUnits(
   userId: number
 ): Promise<{ unitId: string; name: string }[]> {
-  const result = await db
+  const db = await initDB();
+
+  const result = db
     .select({
       unitId: unit.id,
       name: unit.name
@@ -52,7 +54,9 @@ export async function fetchUserEnrolledUnits(
 export async function fetchUserAssessments(
   userId: number
 ): Promise<{ assessmentId: number; name: string; mark: number | null }[]> {
-  const results = await db
+  const db = await initDB();
+
+  const results = db
     .select({
       assessmentId: assessment.id,
       name: assessment.name,
@@ -77,7 +81,9 @@ export async function fetchUserAssessmentsForUnit(
   userId: number,
   unitId: string
 ): Promise<Assessment[]> {
-  const results = await db
+  const db = await initDB();
+
+  const results = db
     .select({
       name: assessment.name,
       mark: result.mark,
@@ -107,7 +113,9 @@ export async function fetchUnitAssessments(unitId: string): Promise<
     resultsReleased: boolean;
   }[]
 > {
-  const result = await db
+  const db = await initDB();
+
+  const result = db
     .select({
       assessmentId: assessment.id,
       name: assessment.name,
@@ -129,8 +137,10 @@ export async function fetchUnitAssessments(unitId: string): Promise<
 export async function fetchPostDetailsById(
   postId: number
 ): Promise<Post<ReplyDetails> | null> {
+  const db = await initDB();
+
   // Fetch the post details with its likes and title
-  const postDetails = await db
+  const postDetails = db
     .select({
       id: post.id,
       title: post.title,
@@ -145,7 +155,7 @@ export async function fetchPostDetailsById(
   }
 
   // Fetch associated tags for the pos
-  const tagsResult = await db
+  const tagsResult = db
     .select({
       tagName: tag.name
     })
@@ -156,7 +166,7 @@ export async function fetchPostDetailsById(
 
   const tags = tagsResult.map((t) => t.tagName);
 
-  const repliesResult = await db
+  const repliesResult = db
     .select({
       timestamp: reply.timestamp,
       firstName: user.firstName,
@@ -185,7 +195,9 @@ export async function fetchPostDetailsById(
   };
 }
 export async function getAllForums(): Promise<Forum[]> {
-  const forums = await db
+  const db = await initDB();
+
+  const forums = db
     .select({
       id: forum.id,
       name: forum.name,
@@ -198,7 +210,9 @@ export async function getAllForums(): Promise<Forum[]> {
 export async function fetchPostsInForumByName(
   forumName: string
 ): Promise<Post<Reply>[]> {
-  const posts = await db
+  const db = await initDB();
+
+  const posts = db
     .select({
       postId: post.id,
       title: post.title,
@@ -213,7 +227,7 @@ export async function fetchPostsInForumByName(
     return [];
   }
 
-  const postTags = await db
+  const postTags = db
     .select({
       postId: postTag.postId,
       tagName: tag.name
@@ -234,7 +248,7 @@ export async function fetchPostsInForumByName(
     tagsByPostId[postId].push(tagName);
   }
 
-  const repliesResult = await db
+  const repliesResult = db
     .select({
       postId: reply.postId,
       timestamp: reply.timestamp,
