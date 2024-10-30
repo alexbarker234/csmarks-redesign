@@ -1,5 +1,5 @@
 import { and, eq, inArray } from "drizzle-orm";
-import { Assessment, Post, Reply, ReplyDetails, User } from "../types";
+import { Assessment, Forum, Post, Reply, ReplyDetails, User } from "../types";
 import { initDB } from "./db";
 import {
   assessment,
@@ -184,7 +184,17 @@ export async function fetchPostDetailsById(
     replies
   };
 }
-
+export async function getAllForums(): Promise<Forum[]> {
+  const forums = await db
+    .select({
+      id: forum.id,
+      name: forum.name,
+      description: forum.description
+    })
+    .from(forum)
+    .all();
+  return forums;
+}
 export async function fetchPostsInForumByName(
   forumName: string
 ): Promise<Post<Reply>[]> {

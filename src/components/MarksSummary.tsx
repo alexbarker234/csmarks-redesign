@@ -1,4 +1,5 @@
 import { Unit } from "../types";
+import { cn } from "../utils/cn";
 
 export default function MarksSummary({ unitsData }: { unitsData: Unit[] }) {
   const getColorClass = (percentage: number) => {
@@ -32,7 +33,12 @@ export default function MarksSummary({ unitsData }: { unitsData: Unit[] }) {
                 const colorClass = getColorClass(percentage);
 
                 return (
-                  <div key={idx} className="space-y-1">
+                  <div
+                    key={idx}
+                    className={cn("space-y-1", {
+                      "opacity-50": assessment.mark === undefined
+                    })}
+                  >
                     <div className="flex justify-between">
                       <div className="font-medium">{assessment.name}</div>
                       <div className="font-semibold">

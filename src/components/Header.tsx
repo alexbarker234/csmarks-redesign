@@ -16,20 +16,6 @@ const navLinks = [
   // { label: "help forums", href: "/run/csmarks" }
 ];
 
-const helpForums = [
-  { label: "Algebra", href: `${baseURL}/run/helpmath1014` },
-  { label: "Advanced Algorithms", href: `${baseURL}/run/help3001` },
-  { label: "Cloud Computing", href: `${baseURL}/run/help5503` },
-  { label: "High Performance Computing", href: `${baseURL}/run/help5507` },
-  { label: "Intelligent Agents", href: `${baseURL}/run/help3011` },
-  { label: "Professional Computing", href: `${baseURL}/run/help3200` },
-  {
-    label: "Relational Database Management Systems",
-    href: `${baseURL}/run/help1402`
-  },
-  { label: "Systems Programming", href: `${baseURL}/run/help2002` }
-];
-
 export default function Header() {
   const { user, logout } = useAuth();
 
@@ -46,7 +32,7 @@ export default function Header() {
           </a>
           <div className="relative inline-block">
             <Link to="/" className="text-xl text-white">
-              csmarks
+              cshome
             </Link>
           </div>
         </div>

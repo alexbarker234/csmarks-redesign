@@ -20,6 +20,12 @@ export default function HomePage() {
           description="View your marks, per-unit histograms, statistics, and feedback on your marked work."
           url="/marks"
           color="blue"
+        />{" "}
+        <InfoSection
+          title="Forums"
+          description="View unit help forums, announcements and more."
+          url="/forums"
+          color="green"
         />
       </section>
 
@@ -31,12 +37,7 @@ export default function HomePage() {
           url="https://secure.csse.uwa.edu.au/run/unitinfo"
           color="green"
         />
-        <InfoSection
-          title="CS Forum"
-          description="General announcements, information about industry visitors, and presentations of interest."
-          url="https://secure.csse.uwa.edu.au/run/csforum"
-          color="green"
-        />
+
         <InfoSection
           title="CSSE Feedback"
           description="Discuss and offer feedback about teaching and resources, and participate in Student/Staff Liaison meetings."

@@ -25,8 +25,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     if (cookies.userId) {
       const user = await fetchUser(cookies.userId);
       setUser(user);
-      setIsReady(true);
     }
+    setIsReady(true);
   };
 
   useEffect(() => {

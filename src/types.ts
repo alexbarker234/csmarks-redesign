@@ -16,7 +16,11 @@ export interface Unit {
   overall: string;
   assessments: Assessment[];
 }
-
+export type Forum = {
+  id: number;
+  name: string;
+  description: string;
+};
 export type Reply = {
   timestamp: Date;
   author: string;

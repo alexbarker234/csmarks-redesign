@@ -45,8 +45,8 @@ export default function ForumPage() {
   };
 
   return (
-    <div className="feedback-posts-container p-4">
-      <h2 className="mb-4 text-2xl font-bold">CSSE Feedback Forum</h2>
+    <div className="feedback-posts-container px-4">
+      <h2 className="mb-4 text-2xl font-bold">Welcome to {forumId}</h2>
 
       {/* Search Box */}
       <SearchBox value={searchQuery} onChange={setSearchQuery} />
