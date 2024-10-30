@@ -7,10 +7,11 @@ import { useEffect, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import AssessmentHistogram from "../components/AssessmentHistogram";
 import MarksSummary from "../components/MarksSummary";
+
 import {
   fetchUserAssessmentsForUnit,
   fetchUserEnrolledUnits
-} from "../database/dbOld";
+} from "../database/data";
 import { useAuth } from "../hooks/auth";
 import { Assessment } from "../types";
 

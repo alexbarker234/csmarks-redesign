@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchUser } from "../database/dbOld";
+import { fetchUser } from "../database/data";
 import { useAuth } from "../hooks/auth";
 
 export default function LoginPage() {

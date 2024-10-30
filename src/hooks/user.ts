@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchUser } from "../database/dbOld";
+import { fetchUser } from "../database/data";
 
 export const useUser = ({ id }: { id: number }) => {
   return useQuery({
