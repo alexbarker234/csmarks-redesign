@@ -1,4 +1,5 @@
 import { IoMdMenu } from "react-icons/io";
+import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/auth";
 
 const baseURL = "https://secure.csse.uwa.edu.au";
@@ -13,20 +14,6 @@ const navLinks = [
   { label: "cssubmit", href: `${baseURL}/run/cssubmit` },
   { label: "csmarks", href: `/` }
   // { label: "help forums", href: "/run/csmarks" }
-];
-
-const helpForums = [
-  { label: "Algebra", href: `${baseURL}/run/helpmath1014` },
-  { label: "Advanced Algorithms", href: `${baseURL}/run/help3001` },
-  { label: "Cloud Computing", href: `${baseURL}/run/help5503` },
-  { label: "High Performance Computing", href: `${baseURL}/run/help5507` },
-  { label: "Intelligent Agents", href: `${baseURL}/run/help3011` },
-  { label: "Professional Computing", href: `${baseURL}/run/help3200` },
-  {
-    label: "Relational Database Management Systems",
-    href: `${baseURL}/run/help1402`
-  },
-  { label: "Systems Programming", href: `${baseURL}/run/help2002` }
 ];
 
 export default function Header() {
@@ -44,13 +31,15 @@ export default function Header() {
             />
           </a>
           <div className="relative inline-block">
-            <button className="text-xl text-white">csmarks</button>
+            <Link to="/" className="text-xl text-white">
+              cshome
+            </Link>
           </div>
         </div>
 
         <div className="group relative flex cursor-pointer items-center text-white">
           <div className="mr-3 text-right text-xl">
-            {user ? user.userId : "Login"}
+            {user ? user.id : "Login"}
           </div>
           <IoMdMenu size={35} className="ml-2" />
 

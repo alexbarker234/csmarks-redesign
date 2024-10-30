@@ -1,4 +1,5 @@
 import { Unit } from "../types";
+import { cn } from "../utils/cn";
 
 export default function MarksSummary({ unitsData }: { unitsData: Unit[] }) {
   const getColorClass = (percentage: number) => {
@@ -28,15 +29,20 @@ export default function MarksSummary({ unitsData }: { unitsData: Unit[] }) {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {unit.assessments.map((assessment, idx) => {
                 const percentage =
-                  ((assessment.score ?? 0) / assessment.total) * 100;
+                  ((assessment.mark ?? 0) / assessment.maxMark) * 100;
                 const colorClass = getColorClass(percentage);
 
                 return (
-                  <div key={idx} className="space-y-1">
+                  <div
+                    key={idx}
+                    className={cn("space-y-1", {
+                      "opacity-50": assessment.mark === undefined
+                    })}
+                  >
                     <div className="flex justify-between">
                       <div className="font-medium">{assessment.name}</div>
                       <div className="font-semibold">
-                        {assessment.score}/{assessment.total}
+                        {assessment.mark}/{assessment.maxMark}
                       </div>
                     </div>
                     <div className="relative h-3 rounded bg-gray-300">
@@ -46,7 +52,7 @@ export default function MarksSummary({ unitsData }: { unitsData: Unit[] }) {
                       ></div>
                     </div>
                     <p className="mt-1 text-xs text-gray-500">
-                      {assessment.score === undefined
+                      {assessment.mark === undefined
                         ? "Not released"
                         : percentage.toFixed(0) + "%"}
                     </p>

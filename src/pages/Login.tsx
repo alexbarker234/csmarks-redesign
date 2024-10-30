@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { fetchUser } from "../database/dbOld";
 import { useAuth } from "../hooks/auth";
 
-export default function LoginForm() {
+export default function LoginPage() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const { login } = useAuth();
+  const { user, login } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!userId || !password) {
@@ -16,7 +24,20 @@ export default function LoginForm() {
       return;
     }
 
+    if (!/^\d{8}$/.test(userId)) {
+      setError("User ID must be 8 digits");
+      return;
+    }
+    const numericUserId = Number(userId);
+    const user = await fetchUser(numericUserId);
+    if (!user) {
+      setError("User does not exist");
+      return;
+    }
     login(userId);
+
+    navigate("/");
+
     setError("");
   };
 
@@ -73,7 +94,7 @@ export default function LoginForm() {
         <div>
           <button
             type="submit"
-            className="hover:bg-primary-blue-dark rounded-lg bg-primary-blue px-6 py-3 text-white shadow-md transition-colors"
+            className="rounded-lg bg-primary-blue px-6 py-3 text-white shadow-md transition-colors hover:bg-primary-blue-dark"
           >
             Login
           </button>

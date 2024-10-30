@@ -1,8 +1,10 @@
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+import { fetchUser } from "./database/dbOld";
 import { User } from "./types";
 
 interface AuthContextType {
+  isReady: boolean;
   user: User | null;
   login: (userId: string) => void;
   logout: () => void;
@@ -16,20 +18,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isReady, setIsReady] = useState(false);
   const [cookies, setCookie, removeCookie] = useCookies(["userId"]);
 
-  useEffect(() => {
+  const updateUser = async () => {
     if (cookies.userId) {
-      setUser({
-        firstName: "Example",
-        lastName: "Person",
-        userId: cookies.userId
-      });
+      const user = await fetchUser(cookies.userId);
+      setUser(user);
     }
+    setIsReady(true);
+  };
+
+  useEffect(() => {
+    updateUser();
   }, [cookies.userId]);
 
   const login = (userId: string) => {
-    setUser({ firstName: "Example", lastName: "Person", userId });
+    updateUser();
     setCookie("userId", userId, { path: "/" });
   };
 
@@ -41,6 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   return (
     <AuthContext.Provider
       value={{
+        isReady,
         user,
         login,
         logout
