@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import SearchBox from "../components/SearchBox";
-import { fetchPostsInForumByName } from "../database/db";
+import { fetchPostsInForumByName } from "../database/data";
 import { Post, Reply } from "../types";
 import { formatDate } from "../utils/dateUtils";
 

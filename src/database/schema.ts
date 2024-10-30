@@ -15,24 +15,32 @@ export const user = sqliteTable("User", {
 export const forum = sqliteTable("Forum", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
-  description: text("description")
+  description: text("description").notNull()
 });
 
 export const post = sqliteTable("Post", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  forumId: integer("forumId").references(() => forum.id),
+  forumId: integer("forumId")
+    .references(() => forum.id)
+    .notNull(),
+  userId: integer("userId")
+    .references(() => user.id)
+    .notNull(),
   title: text("title").notNull(),
-  content: text("content").notNull(),
-  likes: integer("likes").default(0)
+  likes: integer("likes").default(0).notNull()
 });
 
 export const reply = sqliteTable("Reply", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  postId: integer("postId").references(() => post.id),
-  userId: integer("userId").references(() => user.id),
-  content: text("content"),
-  timestamp: integer("timestamp"),
-  likes: integer("likes").default(0)
+  postId: integer("postId")
+    .references(() => post.id)
+    .notNull(),
+  userId: integer("userId")
+    .references(() => user.id)
+    .notNull(),
+  content: text("content").notNull(),
+  timestamp: integer("timestamp").notNull(),
+  likes: integer("likes").default(0).notNull()
 });
 
 export const tag = sqliteTable("Tag", {
@@ -43,8 +51,12 @@ export const tag = sqliteTable("Tag", {
 export const postTag = sqliteTable(
   "PostTag",
   {
-    postId: integer("postId").references(() => post.id),
-    tagId: integer("tagId").references(() => tag.id)
+    postId: integer("postId")
+      .references(() => post.id)
+      .notNull(),
+    tagId: integer("tagId")
+      .references(() => tag.id)
+      .notNull()
   },
   (table) => {
     return {
@@ -60,24 +72,36 @@ export const unit = sqliteTable("Unit", {
 
 export const enrolment = sqliteTable("Enrolment", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  unitId: text("unitId").references(() => unit.id),
-  userId: integer("userId").references(() => user.id)
+  unitId: text("unitId")
+    .references(() => unit.id)
+    .notNull(),
+  userId: integer("userId")
+    .references(() => user.id)
+    .notNull()
 });
 
 export const assessment = sqliteTable("Assessment", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
-  unitId: text("unitId").references(() => unit.id),
+  unitId: text("unitId")
+    .references(() => unit.id)
+    .notNull(),
   maxMark: integer("maxMark").notNull(),
   resultsReleased: integer("resultsReleased").notNull()
 });
 
 export const result = sqliteTable("Result", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: integer("userId").references(() => user.id),
-  assessmentId: integer("assessmentId").references(() => assessment.id),
+  userId: integer("userId")
+    .references(() => user.id)
+    .notNull(),
+  assessmentId: integer("assessmentId")
+    .references(() => assessment.id)
+    .notNull(),
   mark: integer("mark")
 });
+
+// RELATIONS
 
 export const userRelations = relations(user, ({ many }) => ({
   enrolments: many(enrolment),

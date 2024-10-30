@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker";
 import Database from "better-sqlite3";
+import { InferInsertModel } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import path from "path";
 import { randBetween } from "../utils/random";
@@ -83,7 +84,7 @@ export const seedForums = async (db: ReturnType<typeof drizzle>) => {
     "web development"
   ];
 
-  const posts = [];
+  const posts: InferInsertModel<typeof post>[] = [];
   const replies = [];
   const postTags = [];
   let postId = 0;
@@ -102,8 +103,8 @@ export const seedForums = async (db: ReturnType<typeof drizzle>) => {
       const post = {
         id: postId,
         forumId: forum.id,
+        userId: faker.helpers.arrayElement(users).id,
         title: faker.lorem.sentence(),
-        content: faker.lorem.paragraphs(faker.number.int({ min: 1, max: 3 })),
         likes: faker.number.int({ min: 2, max: 100 })
       };
 
@@ -186,7 +187,7 @@ async function seedDatabase() {
     const assessmentSet =
       assessmentSets[Math.floor(Math.random() * assessmentSets.length)];
 
-    const unitAssessments = assessmentSet.map((name, index) => ({
+    const unitAssessments = assessmentSet.map((name) => ({
       name,
       unitId: unitData.id,
       maxMark: markOptions[Math.floor(Math.random() * markOptions.length)],

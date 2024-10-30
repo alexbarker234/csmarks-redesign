@@ -18,13 +18,13 @@ export interface Unit {
 }
 
 export type Reply = {
-  timestamp: string;
+  timestamp: Date;
   author: string;
   likes: number;
 };
 
 export type ReplyDetails = {
-  timestamp: string;
+  timestamp: Date;
   author: string;
   likes: number;
   content: string;

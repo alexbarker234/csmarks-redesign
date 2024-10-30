@@ -1,24 +1,7 @@
-import { eq } from "drizzle-orm/expressions";
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { initDB } from "../database/db";
-import { user } from "../database/schema";
+import { cn } from "../utils/cn";
 
 export default function HomePage() {
-  useEffect(() => {
-    const lol = async () => {
-      console.log("Attempting shenanigans");
-      const db = await initDB();
-      const searched = await db
-        .select()
-        .from(user)
-        .where(eq(user.id, 23152009))
-        .all();
-      console.log(searched);
-    };
-    lol();
-  }, []);
-
   return (
     <>
       <section className="mb-8 rounded-lg bg-white p-6 shadow-md">
@@ -31,7 +14,7 @@ export default function HomePage() {
       </section>
 
       <h1 className="my-2 text-2xl">New Pages</h1>
-      <section className="flex flex-wrap">
+      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <InfoSection
           title="Marks"
           description="View your marks, per-unit histograms, statistics, and feedback on your marked work."
@@ -42,7 +25,6 @@ export default function HomePage() {
 
       <h1 className="my-2 text-2xl">Old content</h1>
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {" "}
         <InfoSection
           title="Unit Information"
           description="Provides informal information on coursework units, the software used, and recommendations on choosing a laptop."
@@ -88,7 +70,7 @@ interface InfoSectionProps {
   title: string;
   description: string;
   url: string;
-  color: string;
+  color: "red" | "yellow" | "blue" | "green";
 }
 
 export function InfoSection({
@@ -100,7 +82,13 @@ export function InfoSection({
   return (
     <Link
       to={url}
-      className={`block rounded-lg border border-${color}-400 bg-${color}-100 p-4 shadow transition-colors hover:bg-${color}-200`}
+      className={cn(`block rounded-lg border p-4 shadow transition-colors`, {
+        "border-green-400 bg-green-100 hover:bg-green-200": color === "green",
+        "border-blue-400 bg-blue-100 hover:bg-blue-200": color === "blue",
+        "border-yellow-400 bg-yellow-100 hover:bg-yellow-200":
+          color === "yellow",
+        "border-red-400 bg-red-100 hover:bg-red-200": color === "red"
+      })}
     >
       <h3 className={`text-lg font-bold text-${color}-700`}>{title}</h3>
       <p className="text-gray-700">{description}</p>
