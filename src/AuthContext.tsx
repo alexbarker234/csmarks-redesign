@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { fetchUser } from "./database/db";
+import { fetchUser } from "./database/dbOld";
 import { User } from "./types";
 
 interface AuthContextType {

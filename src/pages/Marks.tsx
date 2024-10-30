@@ -10,7 +10,7 @@ import MarksSummary from "../components/MarksSummary";
 import {
   fetchUserAssessmentsForUnit,
   fetchUserEnrolledUnits
-} from "../database/db";
+} from "../database/dbOld";
 import { useAuth } from "../hooks/auth";
 import { Assessment } from "../types";
 

@@ -1,6 +1,24 @@
+import { eq } from "drizzle-orm/expressions";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { initDB } from "../database/db";
+import { user } from "../database/schema";
 
 export default function HomePage() {
+  useEffect(() => {
+    const lol = async () => {
+      console.log("Attempting shenanigans");
+      const db = await initDB();
+      const searched = await db
+        .select()
+        .from(user)
+        .where(eq(user.id, 23152009))
+        .all();
+      console.log(searched);
+    };
+    lol();
+  }, []);
+
   return (
     <>
       <section className="mb-8 rounded-lg bg-white p-6 shadow-md">

@@ -1,0 +1,8 @@
+{
+  "schema": "./src/database/schema.ts",
+  "out": "./migrations",
+  "dbCredentials": {
+    "url": "./public/mock.sqlite"
+  },
+  "dialect": "sqlite"
+}

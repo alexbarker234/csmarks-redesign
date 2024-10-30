@@ -26,11 +26,7 @@ const router = createHashRouter([
       },
       {
         path: "/marks",
-        element: (
-          <ProtectedRoute>
-            <MarksPage />
-          </ProtectedRoute>
-        )
+        element: <ProtectedRoute children={<MarksPage />} />
       }
     ]
   }
