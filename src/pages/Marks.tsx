@@ -13,18 +13,11 @@ import {
   fetchUserEnrolledUnits
 } from "../database/data";
 import { useAuth } from "../hooks/auth";
-import { Assessment } from "../types";
-
-interface UnitWithAssessments {
-  unitCode: string;
-  unitName: string;
-  overall: string;
-  assessments: Assessment[];
-}
+import { Unit } from "../types";
 
 export default function MarksPage() {
   const { user } = useAuth();
-  const [unitsData, setUnitsData] = useState<UnitWithAssessments[]>([]);
+  const [unitsData, setUnitsData] = useState<Unit[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -62,7 +55,7 @@ export default function MarksPage() {
   if (!user) return <></>;
 
   return (
-    <div>
+    <div className="">
       <h2 className="text-3xl font-bold">
         Marks recorded for {user.lastName}, {user.firstName} in 2024
       </h2>
@@ -80,8 +73,9 @@ export default function MarksPage() {
       <div className="mt-4">
         {unitsData.map((unit, unitIndex) => (
           <Disclosure key={unitIndex}>
-            <DisclosureButton className="mb-2 flex items-center rounded-md px-2 py-4 text-xl font-bold transition-colors hover:bg-gray-100">
-              {unit.unitCode} - {unit.unitName} (Overall: {unit.overall})
+            <DisclosureButton className="mb-2 flex items-center rounded-md px-2 py-4 text-xl font-semibold transition-colors hover:bg-gray-100">
+              <span className="font-bold">{unit.unitCode}</span> -{" "}
+              {unit.unitName}
               <FaChevronDown className="ml-4" />
             </DisclosureButton>
             <DisclosurePanel

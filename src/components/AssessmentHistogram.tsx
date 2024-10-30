@@ -9,6 +9,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { Assessment } from "../types";
+import { cn } from "../utils/cn";
 import { convertToBins, generateBellCurveData } from "../utils/fakeData";
 import { randBetween } from "../utils/random";
 
@@ -23,14 +24,21 @@ ChartJS.register(
 
 export default function AssessmentHistogram({
   assessment,
-  bins = 10
+  bins = 10,
+  className
 }: {
   assessment: Assessment;
   bins?: number;
+  className?: string;
 }) {
   if (!assessment.mark) {
     return (
-      <div className="flex h-[321px] w-[430px] items-center rounded-md border border-gray-300 p-4 text-center">
+      <div
+        className={cn(
+          "flex h-[321px] w-[430px] max-w-full items-center rounded-md border border-gray-300 p-4 text-center",
+          className
+        )}
+      >
         <div className="w-full">{assessment.name} marks not yet released</div>
       </div>
     );
@@ -97,7 +105,12 @@ export default function AssessmentHistogram({
   };
 
   return (
-    <div className="h-[321px] w-[430px] rounded-md border border-gray-300 p-4">
+    <div
+      className={cn(
+        "h-[321px] w-[430px] max-w-full rounded-md border border-gray-300 p-4",
+        className
+      )}
+    >
       <Bar data={data} options={options} />
     </div>
   );

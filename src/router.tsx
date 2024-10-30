@@ -4,6 +4,7 @@ import ForumPage from "./pages/Forum.tsx";
 import ForumsListPage from "./pages/ForumList.tsx";
 import HomePage from "./pages/Home.tsx";
 import LoginPage from "./pages/Login.tsx";
+import MarkDetailsPage from "./pages/MarkDetails.tsx";
 import MarksPage from "./pages/Marks.tsx";
 import PostPage from "./pages/Post.tsx";
 import Root from "./pages/Root";
@@ -32,16 +33,20 @@ const router = createHashRouter([
         element: <ForumsListPage />
       },
       {
-        path: "/forum/:forumId",
+        path: "/forums/:forumId",
         element: <ForumPage />
       },
       {
-        path: "/forum/:forumId/:postId",
+        path: "/forums/:forumId/:postId",
         element: <PostPage />
       },
       {
         path: "/marks",
         element: <ProtectedRoute children={<MarksPage />} />
+      },
+      {
+        path: "/marks/:unitId",
+        element: <ProtectedRoute children={<MarkDetailsPage />} />
       }
     ]
   }

@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchUser } from "../database/data";
 import { useAuth } from "../hooks/auth";
+import { cn } from "../utils/cn";
 
 export default function LoginPage() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const [showIDPopup, setShowIDPopup] = useState(false);
 
   const { user, login } = useAuth();
 
@@ -48,7 +51,7 @@ export default function LoginPage() {
       </h2>
       <form onSubmit={handleLogin} className="space-y-6">
         {/*  ID Input */}
-        <div className="flex flex-col">
+        <div className="relative flex flex-col">
           <label htmlFor="uwaid" className="mb-2 font-bold">
             Your UWA ID:
           </label>
@@ -56,6 +59,8 @@ export default function LoginPage() {
             id="uwaid"
             type="text"
             value={userId}
+            onFocus={() => setShowIDPopup(true)}
+            onBlur={() => setShowIDPopup(false)}
             onChange={(e) => {
               const value = e.target.value;
               // Allow only digits or empty
@@ -69,6 +74,20 @@ export default function LoginPage() {
             minLength={8}
             maxLength={8}
           />
+          <div
+            className={cn(
+              "absolute left-full top-1/2 ml-5 w-60 -translate-y-1/2 rounded-md bg-white p-4 shadow-md transition-opacity",
+              { "opacity-0": !showIDPopup }
+            )}
+          >
+            <p>Use one of these IDs to log in:</p>
+            <ul className="list-inside list-disc">
+              <li>23152009</li>
+              <li>22847284</li>
+              <li>28375637</li>
+            </ul>
+            <p>Any password is fine</p>
+          </div>
         </div>
 
         {/* Password Input */}

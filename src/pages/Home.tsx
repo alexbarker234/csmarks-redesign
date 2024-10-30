@@ -13,7 +13,7 @@ export default function HomePage() {
         </p>
       </section>
 
-      <h1 className="my-2 text-2xl">New Pages</h1>
+      <h1 className="my-4 text-2xl">New Pages</h1>
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <InfoSection
           title="Marks"
@@ -29,7 +29,7 @@ export default function HomePage() {
         />
       </section>
 
-      <h1 className="my-2 text-2xl">Old content</h1>
+      <h1 className="my-4 text-2xl">Old Pages</h1>
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <InfoSection
           title="Unit Information"
