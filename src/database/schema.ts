@@ -1,11 +1,57 @@
 import { relations } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  integer,
+  primaryKey,
+  sqliteTable,
+  text
+} from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("User", {
   id: integer("id").primaryKey(),
   firstName: text("firstName").notNull(),
   lastName: text("lastName").notNull()
 });
+
+export const forum = sqliteTable("Forum", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  description: text("description")
+});
+
+export const post = sqliteTable("Post", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  forumId: integer("forumId").references(() => forum.id),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  likes: integer("likes").default(0)
+});
+
+export const reply = sqliteTable("Reply", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  postId: integer("postId").references(() => post.id),
+  userId: integer("userId").references(() => user.id),
+  content: text("content"),
+  timestamp: integer("timestamp"),
+  likes: integer("likes").default(0)
+});
+
+export const tag = sqliteTable("Tag", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull()
+});
+
+export const postTag = sqliteTable(
+  "PostTag",
+  {
+    postId: integer("postId").references(() => post.id),
+    tagId: integer("tagId").references(() => tag.id)
+  },
+  (table) => {
+    return {
+      primaryKey: primaryKey({ columns: [table.postId, table.tagId] })
+    };
+  }
+);
 
 export const unit = sqliteTable("Unit", {
   id: text("id").primaryKey(),
@@ -35,7 +81,32 @@ export const result = sqliteTable("Result", {
 
 export const userRelations = relations(user, ({ many }) => ({
   enrolments: many(enrolment),
-  results: many(result)
+  results: many(result),
+  replies: many(reply)
+}));
+
+export const forumRelations = relations(forum, ({ many }) => ({
+  posts: many(post)
+}));
+
+export const postRelations = relations(post, ({ one, many }) => ({
+  forum: one(forum, { fields: [post.forumId], references: [forum.id] }),
+  replies: many(reply),
+  tags: many(postTag)
+}));
+
+export const replyRelations = relations(reply, ({ one }) => ({
+  post: one(post, { fields: [reply.postId], references: [post.id] }),
+  user: one(user, { fields: [reply.userId], references: [user.id] })
+}));
+
+export const tagRelations = relations(tag, ({ many }) => ({
+  postTags: many(postTag)
+}));
+
+export const postTagRelations = relations(postTag, ({ one }) => ({
+  post: one(post, { fields: [postTag.postId], references: [post.id] }),
+  tag: one(tag, { fields: [postTag.tagId], references: [tag.id] })
 }));
 
 export const unitRelations = relations(unit, ({ many }) => ({
