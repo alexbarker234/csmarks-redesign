@@ -3,7 +3,7 @@ import initSqlJs from "sql.js";
 
 let db: ReturnType<typeof drizzle>;
 
-export const initDB = async (dbFile: string = "/mock.sqlite") => {
+export const initDB = async (dbFile: string = "./mock.sqlite") => {
   if (!db) {
     console.log("Initialising Mock DB");
 
