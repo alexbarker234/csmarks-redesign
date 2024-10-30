@@ -4,17 +4,21 @@ import { CiWarning } from "react-icons/ci";
 import { FaEllipsisH, FaShare, FaThumbsUp } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { fetchPostDetailsById } from "../database/data";
+import { useBreadcrumb } from "../hooks/breadcrumb";
 import { Post, ReplyDetails } from "../types";
 import { formatDate } from "../utils/dateUtils";
 
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();
   const [post, setPost] = useState<Post<ReplyDetails> | null>(null);
+  const { setCustomTitle } = useBreadcrumb();
 
   useEffect(() => {
     if (postId) {
       fetchPostDetailsById(Number(postId)).then((postDetails) => {
         setPost(postDetails);
+        if (postDetails)
+          setCustomTitle(`/forums/help1003/${postId}`, postDetails.title);
       });
     }
   }, [postId]);

@@ -1,16 +1,19 @@
 import { RiArrowDropRightLine } from "react-icons/ri";
 import { Link, useLocation } from "react-router-dom";
+import { useBreadcrumb } from "../hooks/breadcrumb";
 
 export default function BreadCrumb() {
   const location = useLocation();
+  const { customTitles } = useBreadcrumb();
 
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
   let crumbs = pathSegments.map((segment, index) => {
     const href = "/" + pathSegments.slice(0, index + 1).join("/");
-    const label = segment
+    let label = segment
       .replace(/-/g, " ")
       .replace(/\b\w/g, (char) => char.toUpperCase());
+    label = customTitles[href] ?? label;
 
     return { href, label };
   });
