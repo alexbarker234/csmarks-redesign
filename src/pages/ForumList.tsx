@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import SearchBox from "../components/SearchBox";
 import { getAllForums } from "../database/data";
 import { Forum } from "../types";
 
 export default function ForumsListPage() {
   const [forums, setForums] = useState<Forum[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     async function fetchForums() {
@@ -21,13 +23,26 @@ export default function ForumsListPage() {
     fetchForums();
   }, []);
 
+  const filteredForums = forums.filter(
+    (forum) =>
+      forum.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      forum.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) return <p>Loading forums...</p>;
 
   return (
-    <div className="mx-auto min-h-screen max-w-4xl">
+    <div className="mx-auto min-h-screen max-w-4xl p-4">
       <h1 className="mb-6 text-3xl font-bold text-gray-800">Forums</h1>
+
+      {/* Search Box */}
+      <div className="mb-6">
+        <SearchBox value={searchQuery} onChange={setSearchQuery} />
+      </div>
+
+      {/* Forum List */}
       <div className="space-y-4">
-        {forums.map((forum) => (
+        {filteredForums.map((forum) => (
           <Link
             to={`/forum/${forum.name}`}
             key={forum.id}
@@ -40,6 +55,13 @@ export default function ForumsListPage() {
           </Link>
         ))}
       </div>
+
+      {/* Message if No Forums Found */}
+      {filteredForums.length === 0 && (
+        <p className="text-center text-gray-500">
+          No forums match your search.
+        </p>
+      )}
     </div>
   );
 }
