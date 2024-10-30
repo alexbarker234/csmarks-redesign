@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import AssessmentHistogram from "../components/AssessmentHistogram";
-import PercentageBar from "../components/PercentageBar";
+import AssessmentHistogram from "../../components/AssessmentHistogram";
+import PercentageBar from "../../components/PercentageBar";
 import {
   fetchUserAssessmentsForUnit,
   fetchUserEnrolledUnits
-} from "../database/data";
-import { useAuth } from "../hooks/auth";
-import { Unit } from "../types";
+} from "../../database/data";
+import { useAuth } from "../../hooks/auth";
+import { Unit } from "../../types";
 
 export default function MarkDetailsPage() {
   const { unitId } = useParams<{ unitId: string }>();
@@ -57,9 +57,9 @@ export default function MarkDetailsPage() {
 
   return (
     <div className="">
-      <h2 className="mb-6 text-2xl font-bold">
+      <h1 className="mb-6 text-3xl font-bold">
         Marks Overview for {unit.unitCode} - {unit.unitName}
-      </h2>
+      </h1>
 
       <div className="text-lg font-bold text-primary-blue">
         Overall: {unit.overall}

@@ -3,10 +3,10 @@ import { AiOutlineCheckCircle } from "react-icons/ai";
 import { CiWarning } from "react-icons/ci";
 import { FaEllipsisH, FaShare, FaThumbsUp } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { fetchPostDetailsById } from "../database/data";
-import { useBreadcrumb } from "../hooks/breadcrumb";
-import { Post, ReplyDetails } from "../types";
-import { formatDate } from "../utils/dateUtils";
+import { fetchPostDetailsById } from "../../database/data";
+import { useBreadcrumb } from "../../hooks/breadcrumb";
+import { Post, ReplyDetails } from "../../types";
+import { formatDate } from "../../utils/dateUtils";
 
 export default function PostPage() {
   const { postId } = useParams<{ postId: string }>();

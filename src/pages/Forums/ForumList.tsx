@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import SearchBox from "../components/SearchBox";
-import { getAllForums } from "../database/data";
-import { Forum } from "../types";
+import SearchBox from "../../components/SearchBox";
+import { getAllForums } from "../../database/data";
+import { Forum } from "../../types";
 
 export default function ForumsListPage() {
   const [forums, setForums] = useState<Forum[]>([]);

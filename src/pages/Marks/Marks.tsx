@@ -5,15 +5,15 @@ import {
 } from "@headlessui/react";
 import { useEffect, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import AssessmentHistogram from "../components/AssessmentHistogram";
-import MarksSummary from "../components/MarksSummary";
+import AssessmentHistogram from "../../components/AssessmentHistogram";
+import MarksSummary from "../../components/MarksSummary";
 
 import {
   fetchUserAssessmentsForUnit,
   fetchUserEnrolledUnits
-} from "../database/data";
-import { useAuth } from "../hooks/auth";
-import { Unit } from "../types";
+} from "../../database/data";
+import { useAuth } from "../../hooks/auth";
+import { Unit } from "../../types";
 
 export default function MarksPage() {
   const { user } = useAuth();
@@ -56,27 +56,18 @@ export default function MarksPage() {
 
   return (
     <div className="">
-      <h2 className="text-3xl font-bold">
-        Marks recorded for {user.lastName}, {user.firstName} in 2024
-      </h2>
-      <a
-        href={`mailto:${user.id}@student.uwa.edu.au`}
-        className="text-primary-blue"
-      >
-        {user.id}@student.uwa.edu.au
-      </a>
+      <h1 className="text-3xl font-bold">
+        Marks for {user.lastName}, {user.firstName} in 2024
+      </h1>
 
-      <h2 className="mt-4 text-2xl font-bold">
-        Histograms, scatterplots, and any feedback for each unit
-      </h2>
+      <h2 className="mt-4 text-2xl font-bold">Histograms for each unit</h2>
 
       <div className="mt-4">
         {unitsData.map((unit, unitIndex) => (
           <Disclosure key={unitIndex}>
-            <DisclosureButton className="mb-2 flex items-center rounded-md px-2 py-4 text-xl font-semibold transition-colors hover:bg-gray-100">
-              <span className="font-bold">{unit.unitCode}</span> -{" "}
-              {unit.unitName}
-              <FaChevronDown className="ml-4" />
+            <DisclosureButton className="mb-2 flex w-full max-w-md items-center rounded-md p-2 text-left text-xl font-bold transition-colors hover:bg-gray-100">
+              {unit.unitCode} - {unit.unitName}
+              <FaChevronDown className="ml-auto" />
             </DisclosureButton>
             <DisclosurePanel
               transition

@@ -1,12 +1,12 @@
 import { createHashRouter } from "react-router-dom";
 import Error from "./pages/Error.tsx";
-import ForumPage from "./pages/Forum.tsx";
-import ForumsListPage from "./pages/ForumList.tsx";
+import ForumPage from "./pages/Forums/Forum.tsx";
+import ForumsListPage from "./pages/Forums/ForumList.tsx";
+import PostPage from "./pages/Forums/Post.tsx";
 import HomePage from "./pages/Home.tsx";
 import LoginPage from "./pages/Login.tsx";
-import MarkDetailsPage from "./pages/MarkDetails.tsx";
-import MarksPage from "./pages/Marks.tsx";
-import PostPage from "./pages/Post.tsx";
+import MarkDetailsPage from "./pages/Marks/MarkDetails.tsx";
+import MarksPage from "./pages/Marks/Marks.tsx";
 import ProtectedRoute from "./pages/ProtectedRoute.tsx";
 import Root from "./pages/Root";
 
