@@ -44,7 +44,7 @@ export default function ForumsListPage() {
       <div className="space-y-4">
         {filteredForums.map((forum) => (
           <Link
-            to={`/forum/${forum.name}`}
+            to={`/forums/${forum.name}`}
             key={forum.id}
             className="block rounded-lg border border-gray-200 bg-white p-4 shadow transition-shadow hover:shadow-lg"
           >

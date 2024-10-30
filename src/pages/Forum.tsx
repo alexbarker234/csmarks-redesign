@@ -72,7 +72,7 @@ export default function ForumPage() {
       {/* Display Filtered Posts */}
       {filteredPosts.map((post) => (
         <Link
-          to={`/forum/${forumId}/${post.id}`}
+          to={`/forums/${forumId}/${post.id}`}
           key={post.id}
           className="post mb-6 block rounded-lg border border-gray-300 p-4 shadow"
         >
